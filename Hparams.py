@@ -39,6 +39,7 @@ class HParams(object):
 class Mode:
     app = ["make_data" , "preprocess" , "train" , "test"][2]
     train = ["start","resume"][0]
+    debug_mode = False
 
 @dataclass
 class Resource:
