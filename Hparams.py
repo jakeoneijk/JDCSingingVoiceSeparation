@@ -67,7 +67,7 @@ class PreProcess:
 
 @dataclass
 class Train:
-    batch_size = 8
+    batch_size = 16
     lr = 0.001
     epoch = 1000
 

@@ -16,9 +16,9 @@ class LogWriter():
         if global_step == 0:
             file = open(self.log_name,'w')
             file.write("========================================="+'\n')
-            for var in vars(self.h_params.train):
-                value = getattr(self.h_params.train,var)
-                file.write(var + ":" + str(value)+'\n')
+            file.write("Epoch :" + str(self.h_params.train.epoch)+'\n')
+            file.write("lr :" + str(self.h_params.train.lr)+'\n')
+            file.write("Batch :" + str(self.h_params.train.batch_size)+'\n')
             file.write("========================================="+'\n')
             file.close()
 

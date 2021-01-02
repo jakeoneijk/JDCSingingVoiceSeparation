@@ -55,6 +55,10 @@ class AppController():
             total_valid_path_list = total_valid_path_list + valid_path_list
             total_test_path_list = total_test_path_list + test_path_list
 
+        total_train_path_list = total_train_path_list[:20]
+        total_valid_path_list = total_valid_path_list[:20]
+        total_test_path_list = total_test_path_list[:20]
+
         train_data_loader,valid_data_loader,test_data_loader = self.get_data_loader(total_train_path_list,total_valid_path_list,total_test_path_list)
         """
         construct trainer hete and fit

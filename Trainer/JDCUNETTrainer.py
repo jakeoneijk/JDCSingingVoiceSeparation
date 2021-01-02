@@ -78,7 +78,7 @@ class JDCUNETTrainer(Trainer):
             return current_metric
         
         if np.mean(prev_best_metric["vocal_loss"]) > np.mean(current_metric["vocal_loss"]):
-            self.save_module(vocal,best)
+            self.save_module("vocal","best")
             self.best_valid_epoch = self.current_epoch
             return current_metric
         else:
@@ -89,10 +89,10 @@ class JDCUNETTrainer(Trainer):
         log and tensorboard log
         """
         x_axis = self.global_step if train_state == TrainState.TRAIN else self.current_epoch
-        log = f'Epoch ({TrainState.TRAIN.value}): {self.current_epoch:03} ({self.local_step}/{data_size}) global_step: {self.global_step}\t'
+        log = f'Epoch ({train_state.value}): {self.current_epoch:03} ({self.local_step}/{data_size}) global_step: {self.global_step}\t'
         
         for metric_name in metrics:
             val = np.mean(metrics[metric_name])
             log += f' {metric_name}: {val:.06f}'
-            self.log_writer.tensorboard_log_write(f'{TrainState.TRAIN.value}/{metric_name}',x_axis,val)
+            self.log_writer.tensorboard_log_write(f'{train_state.value}/{metric_name}',x_axis,val)
         self.log_writer.print_and_log(log,self.global_step) 
