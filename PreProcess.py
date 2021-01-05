@@ -24,21 +24,27 @@ class PreProcess():
             accom_path = data_path + "/vocal_accom/"+song_name+"_accom.wav"
             mix_path = data_path + "/mix/"+song_name+"_mix.wav"
 
-            mag_mix,_ = self.util.magnitude_spectrogram(mix_path,self.h_params.preprocess.sample_rate,
+            mag_mix,normalize_value = self.util.magnitude_spectrogram(mix_path,self.h_params.preprocess.sample_rate,
                                                     self.h_params.preprocess.nfft,
                                                     self.h_params.preprocess.window_size,
                                                     self.h_params.preprocess.hop_length)
             
-            mag_vocal,_ = self.util.magnitude_spectrogram(vocal_path,self.h_params.preprocess.sample_rate,
+            mag_vocal = self.util.magnitude_spectrogram(vocal_path,self.h_params.preprocess.sample_rate,
                                                     self.h_params.preprocess.nfft,
                                                     self.h_params.preprocess.window_size,
-                                                    self.h_params.preprocess.hop_length)
+                                                    self.h_params.preprocess.hop_length,normalize=False)
             
-            mag_accom,_ = self.util.magnitude_spectrogram(accom_path,self.h_params.preprocess.sample_rate,
+            mag_accom = self.util.magnitude_spectrogram(accom_path,self.h_params.preprocess.sample_rate,
                                                     self.h_params.preprocess.nfft,
                                                     self.h_params.preprocess.window_size,
-                                                    self.h_params.preprocess.hop_length)
+                                                    self.h_params.preprocess.hop_length,normalize=False)
             
+            mag_vocal = mag_vocal/normalize_value
+            mag_accom = mag_accom/normalize_value
+
+            mag_vocal[mag_vocal>mag_mix] = mag_mix[mag_vocal>mag_mix]
+            mag_accom[mag_accom>mag_mix] = mag_mix[mag_accom>mag_mix]
+
             num_time_frames = mag_mix.shape[1]
 
             if self.h_params.data.use_jdc:

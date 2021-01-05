@@ -12,10 +12,10 @@ class JDCUNETTrainer(Trainer):
         self.model = JDCPlusUnet(self.h_params.resource.device).to(self.h_params.resource.device)
 
         self.criterias = {}
-        self.criterias["loss_unet_vocal"] = nn.L1Loss(reduction = 'sum')
+        self.criterias["loss_unet_vocal"] = nn.L1Loss()
         self.criterias["loss_jdc_detection"] = nn.CrossEntropyLoss()
         self.criterias["loss_jdc_classification"] = CrossEntropyLossWithGaussianSmoothedLabels()
-        self.criterias["loss_unet_accom"] = nn.L1Loss(reduction = 'sum')
+        self.criterias["loss_unet_accom"] = nn.L1Loss()
 
         self.is_voice_detection_weight = 0.5
         self.optimizer = torch.optim.Adam(self.model.parameters(),lr=self.h_params.train.lr, weight_decay=1e-4)
@@ -45,8 +45,8 @@ class JDCUNETTrainer(Trainer):
         
         vocal_hat = input_unet*vocal_mask
         accom_hat = input_unet*accom_maks
-        vocal_loss = self.criterias["loss_unet_vocal"](vocal_mask,vocal_target)
-        accom_loss = self.criterias["loss_unet_accom"](accom_maks,accom_target)
+        vocal_loss = self.criterias["loss_unet_vocal"](vocal_hat,vocal_target)
+        accom_loss = self.criterias["loss_unet_accom"](accom_hat,accom_target)
 
         total_loss = vocal_loss + accom_loss + pitch_loss + 0.5 * voice_detection_loss
 

@@ -19,7 +19,7 @@ class Util():
         return hz_A4 * (x ** (midi - midi_A4))
 
     def magnitude_spectrogram(self,audio_path,target_sr=8000,n_fft=1024,
-                                win_length=1024,hop_length=80):
+                                win_length=1024,hop_length=80,normalize=True):
         y,sr = librosa.load(audio_path,sr=44100)
         if sr != target_sr:
             y_resample = librosa.resample(y,orig_sr=sr, target_sr=target_sr)
@@ -27,9 +27,13 @@ class Util():
             y_resample = y
         spec = librosa.stft(y_resample,n_fft=n_fft, hop_length=hop_length, win_length=win_length)
         mag_spec = np.abs(spec)
-        normalize_value = np.max(mag_spec)
 
+        if normalize == False:
+            return mag_spec
+
+        normalize_value = np.max(mag_spec)
         normalized_mag = mag_spec/normalize_value #librosa.amplitude_to_db(mag_spec,ref=normalize_value)
+        
         return normalized_mag,normalize_value
     
     def label_by_freq(self, freq):

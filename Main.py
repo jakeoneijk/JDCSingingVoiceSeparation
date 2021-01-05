@@ -55,7 +55,7 @@ class AppController():
             total_valid_path_list = total_valid_path_list + valid_path_list
             total_test_path_list = total_test_path_list + test_path_list
         
-        self.h_params.mode.debug_mode:
+        if self.h_params.mode.debug_mode:
             total_train_path_list = total_train_path_list[:20]
             total_valid_path_list = total_valid_path_list[:20]
             total_test_path_list = total_test_path_list[:20]

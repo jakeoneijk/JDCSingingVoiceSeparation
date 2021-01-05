@@ -37,7 +37,7 @@ class HParams(object):
 
 @dataclass
 class Mode:
-    app = ["make_data" , "preprocess" , "train" , "test"][2]
+    app = ["make_data" , "preprocess" , "train" , "test"][1]
     train = ["start","resume"][0]
     debug_mode = False
 
@@ -70,7 +70,7 @@ class PreProcess:
 class Train:
     batch_size = 16
     lr = 0.001
-    epoch = 1000
+    epoch = 300
 
 @dataclass
 class Logging():
