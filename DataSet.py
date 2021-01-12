@@ -4,10 +4,13 @@ import pickle
 
 class DataSet(dataset.Dataset):
 
-    def __init__(self, data_path):
+    def __init__(self, data_list,is_path=True):
         self.files = []
-        for fname in data_path:
-            self.files.append(self.read_data(fname))
+        if is_path:
+            for fname in data_list:
+                self.files.append(self.read_data(fname))
+        else:
+            self.files = data_list
     
     def read_data(self, data_path):
         with open(data_path, 'rb') as pickle_file:

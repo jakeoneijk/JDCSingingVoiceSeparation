@@ -15,11 +15,13 @@ class HParams(object):
         self.train= Train()
         self.log = Logging()
         self.test = Test()
+        self.evaluate = Evaluate()
 
         self.make_essential_dir()
 
     def make_essential_dir(self):
         os.makedirs(self.data.root_path,exist_ok=True)
+
         for data_name in self.data.name_list:
             data_path = os.path.join(self.data.root_path,data_name)
             os.makedirs(data_path,exist_ok=True)
@@ -27,31 +29,32 @@ class HParams(object):
             os.makedirs(data_path+"/Preprocessed"+"/train",exist_ok=True)
             os.makedirs(data_path+"/Preprocessed"+"/test",exist_ok=True)
 
-        os.makedirs(self.log.log_root_path,exist_ok=True)
-        os.makedirs(self.log.log_path,exist_ok=True)
-        os.makedirs(self.log.tensorboard_path,exist_ok=True)
-        os.makedirs(self.log.model_save_path,exist_ok=True)
+        if self.mode.app == "train":
+            os.makedirs(self.log.log_root_path,exist_ok=True)
+            os.makedirs(self.log.log_path,exist_ok=True)
+            os.makedirs(self.log.tensorboard_path,exist_ok=True)
+            os.makedirs(self.log.model_save_path,exist_ok=True)
         
         os.makedirs(self.test.pretrain_path,exist_ok=True)
         os.makedirs(self.test.output_path,exist_ok=True)
 
 @dataclass
 class Mode:
-    app = ["make_data" , "preprocess" , "train" , "test"][1]
+    app = ["make_data" , "preprocess" , "train" , "test","evaluate"][-2]
     train = ["start","resume"][0]
     debug_mode = False
 
 @dataclass
 class Resource:
     num_workers = 8
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 @dataclass
 class Data:
     valid_ratio = 0.1
     original_data_path = "../210101_data"
     root_path = "./Data"
-    name_list = ["MedlyDB56"] #"MedlyDB56"
+    name_list = ["MedlyDBSVS"] #"MedlyDBSVS"
     use_jdc = True
 
 @dataclass
@@ -68,6 +71,7 @@ class PreProcess:
 
 @dataclass
 class Train:
+    model = ["JDCUNET","UNETONLY"][1]
     batch_size = 16
     lr = 0.001
     epoch = 300
@@ -81,9 +85,19 @@ class Logging():
     model_save_path = log_path
     model_save_name = ""
     log_every_local_step = 200
+    time = time_for_output
 
 @dataclass
 class Test():
-    input_path = ""
+    input_path = "./TestInput/testset/"
+    test_type = "test_set"
+    audio_file = ["AimeeNorwich_Child_mix.wav","AvaLuna_Waterduct_mix.wav","FamilyBand_Again_mix.wav","MusicDelta_Country2_mix.wav","MusicDelta_Gospel_mix.wav"] #"I'm in love(AR).wav"
     output_path = "./TestOutput"
-    pretrain_path = "./Pretrained"
+    pretrain_path = "./Pretrained/"
+    pretrain_name = "UnetOnly.pth"
+    is_binary_mask = True
+
+@dataclass
+class Evaluate():
+    input_path = "./EvaluateInput"
+    model_name = "JDCUnet" #"JDCUnet" #"UnetOnly"

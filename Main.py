@@ -8,6 +8,9 @@ from torch.utils.data import DataLoader, Dataset
 from MakeData import MakeData
 from PreProcess import PreProcess
 from Trainer.JDCUNETTrainer import JDCUNETTrainer
+from Trainer.UNETTrainer import UNETTrainer
+from Test import Test
+from Evaluation import Evaluation
 
 class AppController():
     def __init__(self,h_params:HParams):
@@ -25,6 +28,9 @@ class AppController():
         
         if self.h_params.mode.app == "test":
             self.test()
+        
+        if self.h_params.mode.app == "evaluate":
+            self.evaluate()
         
         print("finish app")
 
@@ -64,7 +70,10 @@ class AppController():
         """
         construct trainer hete and fit
         """
-        trainer = JDCUNETTrainer(self.h_params)
+        if self.h_params.train.model == "JDCUNET":
+            trainer = JDCUNETTrainer(self.h_params)
+        elif self.h_params.train.model == "UNETONLY":
+            trainer = UNETTrainer(self.h_params)
         trainer.set_data_loader(train_data_loader,valid_data_loader,test_data_loader)
         trainer.fit()
 
@@ -102,7 +111,22 @@ class AppController():
 
 
     def test(self):
-        pass
+        tester = Test(self.h_params) 
+        if self.h_params.test.test_type == "test_set":
+            audio_list = os.listdir(self.h_params.test.input_path)
+            for i,test_audio in enumerate(audio_list):
+                print(f'{i+1}/{len(audio_list)}')
+                tester.output(pretrain_path=self.h_params.test.pretrain_path+self.h_params.test.pretrain_name,
+                                audio_input_path=self.h_params.test.input_path+test_audio,
+                                audio_name=f"{test_audio}")
+        else:
+            tester.output(pretrain_path=self.h_params.test.pretrain_path+self.h_params.test.pretrain_name,
+                            audio_input_path=self.h_params.test.input_path+self.h_params.test.audio_file,
+                            audio_name=f"{self.h_params.test.audio_file}")
+    
+    def evaluate(self):
+        eval = Evaluation(self.h_params)
+        eval.evaluate_test_set()
 
 if __name__ == '__main__':
     h_params = HParams()

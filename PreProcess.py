@@ -12,7 +12,14 @@ class PreProcess():
         self.util = Util()
     
     def pre_process(self,data_path,output_path,song_list,test_song_list):
+        except_song = []
         for i,song_name in enumerate(song_list):
+
+            if self.h_params.data.use_jdc:
+                if not os.path.exists(data_path +"/melody1/"+song_name+"_MELODY1.csv"):
+                    except_song.append(song_name)
+                    continue
+
             print("\n---------------------\n")
             print(f'preprocess {song_name} ({i}/{len(song_list)})')
 
@@ -42,8 +49,8 @@ class PreProcess():
             mag_vocal = mag_vocal/normalize_value
             mag_accom = mag_accom/normalize_value
 
-            mag_vocal[mag_vocal>mag_mix] = mag_mix[mag_vocal>mag_mix]
-            mag_accom[mag_accom>mag_mix] = mag_mix[mag_accom>mag_mix]
+            #mag_vocal[mag_vocal>mag_mix] = mag_mix[mag_vocal>mag_mix]
+            #mag_accom[mag_accom>mag_mix] = mag_mix[mag_accom>mag_mix]
 
             num_time_frames = mag_mix.shape[1]
 
@@ -81,6 +88,8 @@ class PreProcess():
                 print(f'Saving: {save_path}')
                 with open(save_path,'wb') as writing_file:
                     pickle.dump(data,writing_file)
+        for i in except_song:
+            print(f"{i} doesn't have melody")
 
     def melody_labels_time_frame(self, melody_path, time_frame):
         melody_sec_hz = pd.read_csv(melody_path,header=None, names=['sec','hz'])
